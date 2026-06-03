@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Query, Depends
 from sqlalchemy.orm import Session
 from app.database import get_db
 from app.models import Product, Category, Seller, Store
@@ -7,8 +7,12 @@ router = APIRouter()
 
 
 @router.get("/")
-def list_products(db: Session = Depends(get_db)):
-    products = db.query(Product).all()
+def list_products(
+    db: Session = Depends(get_db),
+    skip: int = Query(0, ge=0, description="Number of records to skip"),
+    limit: int = Query(50, ge=1, le=200, description="Max number of records to return"),
+):
+    products = db.query(Product).offset(skip).limit(limit).all()
     return [
         {
             "id": str(p.id),
@@ -23,18 +27,30 @@ def list_products(db: Session = Depends(get_db)):
 
 
 @router.get("/categories")
-def list_categories(db: Session = Depends(get_db)):
-    cats = db.query(Category).all()
+def list_categories(
+    db: Session = Depends(get_db),
+    skip: int = Query(0, ge=0),
+    limit: int = Query(50, ge=1, le=200),
+):
+    cats = db.query(Category).offset(skip).limit(limit).all()
     return [{"id": str(c.id), "name": c.name} for c in cats]
 
 
 @router.get("/sellers")
-def list_sellers(db: Session = Depends(get_db)):
-    sellers = db.query(Seller).all()
+def list_sellers(
+    db: Session = Depends(get_db),
+    skip: int = Query(0, ge=0),
+    limit: int = Query(50, ge=1, le=200),
+):
+    sellers = db.query(Seller).offset(skip).limit(limit).all()
     return [{"id": str(s.id), "name": s.name, "email": s.email} for s in sellers]
 
 
 @router.get("/stores")
-def list_stores(db: Session = Depends(get_db)):
-    stores = db.query(Store).all()
+def list_stores(
+    db: Session = Depends(get_db),
+    skip: int = Query(0, ge=0),
+    limit: int = Query(50, ge=1, le=200),
+):
+    stores = db.query(Store).offset(skip).limit(limit).all()
     return [{"id": str(s.id), "seller_id": str(s.seller_id), "name": s.name} for s in stores]

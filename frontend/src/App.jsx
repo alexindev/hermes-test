@@ -1,6 +1,13 @@
 import { useState, useEffect } from 'react'
+import './App.css'
 
 const API = '/api'
+
+async function fetchJSON(url) {
+  const res = await fetch(url)
+  if (!res.ok) throw new Error(`HTTP ${res.status}: ${res.statusText}`)
+  return res.json()
+}
 
 export default function App() {
   const [products, setProducts] = useState([])
@@ -13,11 +20,11 @@ export default function App() {
 
   useEffect(() => {
     Promise.all([
-      fetch(`${API}/products/`).then(r => r.json()),
-      fetch(`${API}/products/categories`).then(r => r.json()),
-      fetch(`${API}/products/sellers`).then(r => r.json()),
-      fetch(`${API}/orders/`).then(r => r.json()),
-      fetch(`${API}/users/`).then(r => r.json()),
+      fetchJSON(`${API}/products/`).then(r => r.data),
+      fetchJSON(`${API}/products/categories`).then(r => r.data),
+      fetchJSON(`${API}/products/sellers`).then(r => r.data),
+      fetchJSON(`${API}/orders/`).then(r => r.data),
+      fetchJSON(`${API}/users/`).then(r => r.data),
     ])
       .then(([products, categories, sellers, orders, users]) => {
         setProducts(products)
@@ -39,7 +46,7 @@ export default function App() {
   return (
     <div className="app">
       <header>
-        <div className="app" style={{padding:'0'}}>
+        <div className="container">
           <h1>🛒 Маркетплейс — Панель</h1>
           <span style={{opacity:0.8}}>Данные из БД bigdata</span>
         </div>
