@@ -5,6 +5,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends curl && rm -rf 
 WORKDIR /app
 
 COPY pyproject.toml .
+RUN pip install --upgrade pip setuptools wheel
 RUN pip install --no-cache-dir .
 
 COPY . .
