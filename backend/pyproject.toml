@@ -22,5 +22,5 @@ dev = [
 ]
 
 [build-system]
-requires = ["setuptools>=68"]
+requires = ["setuptools>=68,<70"]
 build-backend = "setuptools.backends._legacy:_Backend"
