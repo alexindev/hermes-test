@@ -9,6 +9,16 @@ async function fetchJSON(url) {
   return res.json()
 }
 
+async function safeFetch(url, setter) {
+  try {
+    const data = await fetchJSON(url)
+    setter(data)
+  } catch (err) {
+    console.warn(`Failed to fetch ${url}:`, err.message)
+    setter([])
+  }
+}
+
 export default function App() {
   const [products, setProducts] = useState([])
   const [categories, setCategories] = useState([])
@@ -19,25 +29,13 @@ export default function App() {
   const [error, setError] = useState(null)
 
   useEffect(() => {
-    Promise.all([
-      fetchJSON(`${API}/products/`).then(r => r.data),
-      fetchJSON(`${API}/products/categories`).then(r => r.data),
-      fetchJSON(`${API}/products/sellers`).then(r => r.data),
-      fetchJSON(`${API}/orders/`).then(r => r.data),
-      fetchJSON(`${API}/users/`).then(r => r.data),
-    ])
-      .then(([products, categories, sellers, orders, users]) => {
-        setProducts(products)
-        setCategories(categories)
-        setSellers(sellers)
-        setOrders(orders)
-        setUsers(users)
-        setLoading(false)
-      })
-      .catch(err => {
-        setError(err.message)
-        setLoading(false)
-      })
+    Promise.allSettled([
+      safeFetch(`${API}/products/`, setProducts),
+      safeFetch(`${API}/products/categories`, setCategories),
+      safeFetch(`${API}/products/sellers`, setSellers),
+      safeFetch(`${API}/orders/`, setOrders),
+      safeFetch(`${API}/users/`, setUsers),
+    ]).finally(() => setLoading(false))
   }, [])
 
   if (loading) return <div className="app"><div className="loading">Загрузка...</div></div>
@@ -85,7 +83,7 @@ export default function App() {
             {orders.map(o => (
               <tr key={o.id}>
                 <td style={{fontFamily:'monospace',fontSize:12}}>{o.id.slice(0,8)}...</td>
-                <td><span className={`badge badge-${o.status}`}>{o.status}</span></td>
+                <td><span className={`badge badge-${o.status || 'default'}`}>{o.status}</span></td>
                 <td>{o.total_amount ? `${Number(o.total_amount).toLocaleString('ru-RU')} ₽` : '—'}</td>
               </tr>
             ))}
