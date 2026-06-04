@@ -1,0 +1,44 @@
+# Изолированный профиль Hermes для работы с PostgreSQL через MCP
+# Создайте в ~/.hermes/profiles/<name>/config.yaml
+#
+# Зачем: Hermes пулирует секреты и заменяет пароли на "***" в основном config.yaml.
+# MCP-сервер получает строку "***" вместо реального пароля → подключение падает.
+# Решение: отдельная директория профиля с раскрытым DATABASE_URI.
+
+# Модель и провайдер (настраивайте под вашу среду)
+provider: custom
+model: palmfuture/Qwen3.6-35B-A3B-GPTQ-Int4
+llm_base_url: http://khd-llm-app01.ipa.dev.ucb.local:11434
+
+# Персональность для DB-роли
+personality: db_admin
+
+# Отключить лишние инструменты — только то, что нужно для работы с БД
+tools:
+  terminal: true
+  file: true
+  skills: false
+  web: false
+  browser: false
+  vision: false
+  x_search: false
+  youtube-content: false
+  search: false
+  delegation: false
+
+# Окружение
+env:
+  PYTHONPATH: "/opt/hermes"
+
+# MCP сервер postgres-mcp
+mcp:
+  servers:
+    postgres:
+      type: stdio
+      command: uvx
+      args:
+        - postgres-mcp
+        - --access-mode=restricted
+      env:
+        # ВАЖНО: здесь реальный пароль, не "***"!
+        DATABASE_URI: postgresql://postgres:REAL_PASSWORD@host.docker.internal:6432/bigdata
