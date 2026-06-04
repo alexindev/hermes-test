@@ -80,8 +80,9 @@ class VKTeamsAdapter(BasePlatformAdapter):
 
     def _post_text(self, chat_id, text, reply_msg_id=None):
         params = {'token': self.token, 'chatId': chat_id, 'text': text}
+        # VK Teams API expects replyMsgId as an array of integers
         if reply_msg_id:
-            params['replyMsgId'] = reply_msg_id
+            params['replyMsgId'] = [reply_msg_id]
         try:
             resp = requests.get(
                 f'{self.base_url}/messages/sendText',
@@ -105,8 +106,9 @@ class VKTeamsAdapter(BasePlatformAdapter):
         params = {'token': self.token, 'chatId': chat_id}
         if caption:
             params['caption'] = caption
+        # VK Teams API expects replyMsgId as an array of integers
         if reply_msg_id:
-            params['replyMsgId'] = reply_msg_id
+            params['replyMsgId'] = [reply_msg_id]
 
         # ── Resend by fileId (cheap, no upload) ───────────────────────────
         if file_id:
