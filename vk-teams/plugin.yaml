@@ -1,0 +1,31 @@
+name: vkteams
+label: VK Teams
+kind: platform
+version: 1.1.0
+description: VK Teams / ICQ Bot API adapter for corporate deployments
+author: local
+requires_env:
+  - name: VKTEAMS_BOT_TOKEN
+    description: "Bot token from Metabot"
+    prompt: "VK Teams Bot Token"
+    password: true
+  - name: VKTEAMS_BASE_URL
+    description: "VK Teams API base URL"
+    prompt: "API Base URL"
+    password: false
+optional_env:
+  - name: VKTEAMS_ALLOWED_CHATS
+    description: "Comma-separated list of allowed chatIds (e.g. 107756@chat.agent)"
+    password: false
+  - name: VKTEAMS_ALLOWED_USERS
+    description: "Comma-separated list of allowed userIds"
+    password: false
+  - name: VKTEAMS_ALLOW_ALL_USERS
+    description: "Set to true to allow all users"
+    password: false
+  - name: VKTEAMS_HOME_CHANNEL
+    description: "Default chat_id for cron delivery"
+    password: false
+  - name: VKTEAMS_BOT_MENTION
+    description: "Optional mention string to strip from messages e.g. [1000000100]"
+    password: false
